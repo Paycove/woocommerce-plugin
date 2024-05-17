@@ -1,0 +1,22 @@
+{
+  "name": "paycove/paycove-wc-gateway",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Paycove",
+      "email": "info@paycove.io"
+    }
+  ],
+  "require-dev": {
+    "laravel/pint": "^1.15"
+  },
+  "scripts": {
+    "pint": [
+      "./vendor/bin/pint --test"
+    ],
+    "pint:fix": [
+      "./vendor/bin/pint"
+    ]
+  }
+}

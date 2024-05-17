@@ -40,7 +40,6 @@ final class WC_Paycove_Gateway_Blocks_Support extends AbstractPaymentMethodType 
     );
   
     return array( 'wc-paycove-blocks-integration' );
-  
   }
 
 	public function get_payment_method_data() {

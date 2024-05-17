@@ -168,10 +168,10 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
           }
   
           // let's suppose it is our payment processor JavaScript that allows to obtain a token
-          wp_enqueue_script('paycove_js', 'some payment processor site/api/token.js');
+          // wp_enqueue_script('paycove_js', 'some payment processor site/api/token.js');
   
           // and this is our custom JS in your plugin directory that works with token.js
-          wp_register_script('woocommerce_paycove', plugins_url('paycove.js', __FILE__), array( 'jquery', 'paycove_js' ));
+          // wp_register_script('woocommerce_paycove', plugins_url('paycove.js', __FILE__), array( 'jquery', 'paycove_js' ));
   
           // in most payment processors you have to use PUBLIC KEY to obtain a token
           wp_localize_script(

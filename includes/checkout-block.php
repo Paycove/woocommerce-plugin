@@ -1,9 +1,8 @@
 <?php
-
 add_action( 'woocommerce_blocks_loaded', 'paycove_gateway_block_support' );
 function paycove_gateway_block_support() {
 	// Here we're including our "gateway block support class".
-	require_once __DIR__ . '/includes/class-wc-paycove-gateway-blocks-support.php';
+	require_once __DIR__ . '/class-wc-paycove-gateway-blocks-support.php';
 
 	// Registering the PHP class we have just included.
 	add_action(
@@ -28,5 +27,4 @@ function paycove_cart_checkout_blocks_compatibility() {
 				false // true (compatible, default) or false (not compatible)
 			);
     }
-		
 }

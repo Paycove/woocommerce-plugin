@@ -6,6 +6,7 @@
  * Author: Nate Finch
  * Author URI: http://n8finch.com
  * Version: 1.0.0
+ * License: MIT
  */
 
 if (! defined('ABSPATH') ) {
@@ -29,4 +30,5 @@ add_action('plugins_loaded', 'paycove_init_gateway_class');
 function paycove_init_gateway_class()
 {
 	require_once __DIR__ . '/includes/class-wc-paycove-gateway.php';
+  require_once __DIR__ . '/includes/checkout-block.php';
 }
