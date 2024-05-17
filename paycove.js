@@ -3,7 +3,7 @@ const successCallback = function (data) {
 
   // add a token to our hidden input field
   // console.log(data) to find the token
-  checkoutForm.find('#misha_token').val(data.token);
+  checkoutForm.find('#paycove_token').val(data.token);
 
   // deactivate the tokenRequest function event
   checkoutForm.off('checkout_place_order', tokenRequest);
@@ -18,7 +18,7 @@ const errorCallback = function (data) {
 
 const tokenRequest = function () {
   // here will be a payment gateway function that process all the card data from your form,
-  // maybe it will need your Publishable API key which is misha_params.publishableKey
+  // maybe it will need your Publishable API key which is paycove_params.publishableKey
   // and fires successCallback() on success and errorCallback on failure
   return false;
 };
