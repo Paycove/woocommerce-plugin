@@ -19,7 +19,6 @@ function paycove_gateway_block_support() {
  */
 add_action( 'before_woocommerce_init', 'paycove_cart_checkout_blocks_compatibility' );
 function paycove_cart_checkout_blocks_compatibility() {
-
     if( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
         \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
 				'cart_checkout_blocks',
