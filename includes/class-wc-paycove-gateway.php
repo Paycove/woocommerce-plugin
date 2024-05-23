@@ -82,6 +82,12 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
           'description' => 'This is the account ID provided by Paycove.<br/><strong>This should not be blank.<strong>',
           'required'    => 'required'
         ),
+        'paycove_invoice_template_id' => array(
+          'title'       => 'Paycove Invoice Template ID',
+          'type'        => 'text',
+          'description' => 'This is the template ID of your provided by Paycove.<br/><strong>This should not be blank.<strong>',
+          'required'    => 'required'
+        ),
         'test_publishable_key' => array(
           'title'       => 'Test Publishable Key',
           'type'        => 'text'

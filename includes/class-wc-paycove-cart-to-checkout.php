@@ -33,7 +33,7 @@ class WC_Paycove_Cart_To_Checkout
       $email = $current_user->user_email;
 
       // Construct your custom URL with the total
-      $custom_url = 'https://staging.paycove.io/checkout-builder-form?type=invoice&invoice_template_id=816&total=' . $cart_total . '&account_id=' . $account_id . '&adjustable_amount=true&full_name=' . $name . '&email=' . $email . '&line_items[0][name]=Payment for something';
+      $custom_url = 'https://staging.paycove.io/checkout-builder-form?type=invoice&invoice_template_id=' . $invoice_template_id . '&total=' . $cart_total . '&account_id=' . $account_id . '&adjustable_amount=true&full_name=' . $name . '&email=' . $email . '&line_items[0][name]=Payment for something';
       
       ?>
       <a href="<?php echo esc_url($custom_url); ?>" class="checkout-button button alt wc-forward wp-element-button">
