@@ -21,6 +21,8 @@ See `composer.json` and `package.json` for available formatting and linting scri
 
 
 ## Resources
-- 
+- https://docs.paycove.io/
+- https://help.paycove.io/knowledge/using-the-payment-planner
+- https://help.paycove.io/knowledge/scheduled-payments-split-payments-and-auto-billing
 - https://rudrastyh.com/woocommerce/payment-gateway-plugin.html#gateway_processing
 - https://rudrastyh.com/woocommerce/checkout-block-payment-method-integration.html
