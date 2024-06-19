@@ -1,5 +1,14 @@
 <?php
 
+if ( ! defined('ABSPATH') ) {
+    exit;
+}
+
+if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
+    return;
+}
+
+
 class WC_Paycove_Gateway extends WC_Payment_Gateway
 {
     /**

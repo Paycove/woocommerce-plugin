@@ -2,6 +2,14 @@
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
+if (! defined('ABSPATH')) {
+    exit;
+}
+
+if (! class_exists('WC_Paycove_Gateway_Blocks_Support', false)) {
+    return;
+}
+
 final class WC_Paycove_Gateway_Blocks_Support extends AbstractPaymentMethodType
 {
     private $gateway;
