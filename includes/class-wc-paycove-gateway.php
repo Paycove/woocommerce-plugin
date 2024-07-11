@@ -4,9 +4,9 @@ if ( ! defined('ABSPATH') ) {
     exit;
 }
 
-if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
-    return;
-}
+// if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
+//     return;
+// }
 
 
 class WC_Paycove_Gateway extends WC_Payment_Gateway
@@ -17,7 +17,7 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
     public function __construct()
     {
         $this->id = 'paycove'; // payment gateway plugin ID
-        $this->icon = ''; // URL of the icon that will be displayed on checkout page near your gateway name
+        $this->icon = 'https://www.paycove.io/hubfs/Imported%20images/paycove_logo_explore_nautical_wide-08.svg'; // URL of the icon that will be displayed on checkout page near your gateway name
         $this->has_fields = true; // in case you need a custom credit card form
         $this->method_title = 'Paycove Gateway';
         $this->method_description = 'Integrate with Paycove'; // will be displayed on the options page

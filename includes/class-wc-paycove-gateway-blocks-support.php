@@ -6,9 +6,9 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-if (! class_exists('WC_Paycove_Gateway_Blocks_Support', false)) {
-    return;
-}
+// if (! class_exists('WC_Paycove_Gateway_Blocks_Support', false)) {
+//     return;
+// }
 
 final class WC_Paycove_Gateway_Blocks_Support extends AbstractPaymentMethodType
 {
@@ -33,7 +33,6 @@ final class WC_Paycove_Gateway_Blocks_Support extends AbstractPaymentMethodType
 
     public function get_payment_method_script_handles()
     {
-
         $asset_path   = plugin_dir_path(__DIR__) . 'build/index.asset.php';
         $version      = null;
         $dependencies = array();
@@ -61,6 +60,7 @@ final class WC_Paycove_Gateway_Blocks_Support extends AbstractPaymentMethodType
             // almost the same way:
             // 'title'     => isset( $this->settings[ 'title' ] ) ? $this->settings[ 'title' ] : 'Default value';
             'description'  => $this->get_setting('description'),
+            'icon'         => plugin_dir_url( __DIR__ ) . 'assets/icon.png',
             // if $this->gateway was initialized on line 15
             // 'supports'  => array_filter( $this->gateway->supports, [ $this->gateway, 'supports' ] ),
 
