@@ -29,8 +29,10 @@ function paycove_add_gateway_class($gateways)
 add_action('plugins_loaded', 'paycove_init_gateway_class');
 function paycove_init_gateway_class()
 {
-    // require_once __DIR__ . '/includes/class-wc-paycove-gateway.php';
-    // require_once __DIR__ . '/includes/checkout-block.php';
+    require_once __DIR__ . '/includes/checkout-block.php';
+    require_once __DIR__ . '/includes/class-wc-paycove-gateway.php';
+    require_once __DIR__ . '/includes/class-paycove-webhook.php';
+    require_once __DIR__ . '/includes/class-create-order-from-cart.php';
 
     // Load every file in the includes directory
     foreach (glob(plugin_dir_path(__FILE__) . 'includes/*.php') as $file) {

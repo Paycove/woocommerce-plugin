@@ -23,7 +23,7 @@ function paycove_gateway_block_support()
  * Let your users know that your payment method is not compatible with the WooCommerce Checkout block.
  * My not be necessary, // @todo check!
  */
-add_action('before_woocommerce_init', 'paycove_cart_checkout_blocks_compatibility');
+// add_action('before_woocommerce_init', 'paycove_cart_checkout_blocks_compatibility');
 function paycove_cart_checkout_blocks_compatibility()
 {
     if(class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
