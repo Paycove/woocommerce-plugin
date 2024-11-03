@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { decodeEntities } from '@wordpress/html-entities';
 
-const { registerPaymentMethod } = window.wc.wcBlocksRegistry;
+const { registerPaymentMethod, registerExpressPaymentMethod } = window.wc.wcBlocksRegistry;
 const { getSetting } = window.wc.wcSettings;
 
 const settings = getSetting('paycove_data', {});
@@ -43,7 +43,7 @@ const Content = () => {
 
   const handleCreateOrder = async (e) => {
     e.preventDefault();
-    console.log(cart)
+    // console.log(cart)
     const response = await fetch('/wp-json/paycove/v1/create-pending-order-from-cart', {
       method: 'POST',
       headers: {
@@ -52,18 +52,19 @@ const Content = () => {
       body: JSON.stringify(cart),
     });
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
   };
 
   return (
     <div>
       {/* <img src={settings.icon} alt={settings.description} style={{width: '50px'}} /> */}
-      <a
+      {/* <a
         className='wp-element-button'
         href={`https://staging.paycove.io/checkout-builder-form?type=invoice&invoice_template_id=816&account_id=d3c9b3c2b6cd9aa0fef90df78b82869b&adjustable_amount=true${totalQueryParam}`}
         onClick={handleCreateOrder}>
-        Pay Now
-      </a>
+        Pay on Paycove
+      </a> */}
+      <p>You will be taken to Paycove to checkout.</p>
     </div>
   );
 };
@@ -84,3 +85,15 @@ registerPaymentMethod({
     features: settings.supports,
   },
 });
+
+// registerExpressPaymentMethod({
+//   name: 'paycove',
+//   label: <Label />,
+//   content: <Content />,
+//   edit: <Content />,
+//   canMakePayment: () => true,
+//   ariaLabel: label,
+//   supports: {
+//     features: settings.supports,
+//   },
+// });

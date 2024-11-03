@@ -37,9 +37,9 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->enabled = $this->get_option('enabled');
-        $this->testmode = 'yes' === $this->get_option('testmode');
-        $this->private_key = $this->testmode ? $this->get_option('test_private_key') : $this->get_option('private_key');
-        $this->publishable_key = $this->testmode ? $this->get_option('test_publishable_key') : $this->get_option('publishable_key');
+        // $this->testmode = 'yes' === $this->get_option('testmode');
+        // $this->private_key = $this->testmode ? $this->get_option('test_private_key') : $this->get_option('private_key');
+        // $this->publishable_key = $this->testmode ? $this->get_option('test_publishable_key') : $this->get_option('publishable_key');
 
         // This action hook saves the settings
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ));
@@ -119,9 +119,8 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
     /**
      * You will need it if you want your custom credit card form, Step 4 is about it
      */
-    public function payment_fields()
+    public function payment_fields_xxx()
     {
-
         // ok, let's display some description before the payment form
         if($this->description) {
             // you can instructions for test mode, I mean test card numbers etc.
@@ -206,26 +205,38 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
 
     /**
      * Fields validation, more in Step 5
+     * // @todo probably not needed to validate fields ourselves
      */
-    public function validate_fields()
-    {
+    // public function validate_fields()
+    // {
 
-        if(empty($_POST[ 'billing_first_name' ])) {
-            wc_add_notice('First name is required!', 'error');
-            return false;
-        }
-        return true;
+    //     if(empty($_POST[ 'billing_first_name' ])) {
+    //         wc_add_notice('First name is required!', 'error');
+    //         return false;
+    //     }
+    //     return true;
 
-    }
+    // }
 
     /**
-     * We're processing the payments here, everything about it is in Step 5
+     * This
      */
     public function process_payment($order_id)
     {
+      // Get any order details
+      $order = wc_get_order($order_id);
+      // This is what the classic checkout expects
+      // wp-content/plugins/woocommerce/includes/class-wc-checkout.php
+      // This will redirect to the the paycove page, and we can send whatever we want.
+      // @todo probably need to reserve the stock here, update the order status, etc.
+      return [
+        'result'                => 'success',
+        'redirect'              => 'https://www.paycove.io/?order_id=' . $order_id,
+      ];
 
-        // we need it to get any order detailes
-        $order = wc_get_order($order_id);
+      // For the block checkout, the new file is wp-content/plugins/woocommerce/src/StoreApi/Routes/V1/Checkout.php
+      // And the CheckoutTrait is used as well: wp-content/plugins/woocommerce/src/StoreApi/Utilities/CheckoutTrait.php
+
 
 
         /**
