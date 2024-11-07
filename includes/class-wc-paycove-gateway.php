@@ -223,36 +223,137 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
      */
     public function process_payment($order_id)
     {
-      // Get any order details
+      // Include WooCommerce logger if WooCommerce is available
+      if (class_exists('WC_Logger')) {
+        $logger = new WC_Logger();
+      }
+
+      // Get the order object
       $order = wc_get_order($order_id);
+
+      if ($order) {
+          // Get line items
+          $line_items = [];
+          foreach ($order->get_items() as $item_id => $item) {
+              $product = $item->get_product();
+              
+              $line_items[] = [
+                  'name'     => $item->get_name(),
+                  'price'    => $product ? wc_get_price_to_display($product) : '',
+                  'quantity' => $item->get_quantity()
+              ];
+          }
+
+          // Get contact information
+          $contact = [
+              'name'  => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+              'email' => $order->get_billing_email(),
+          ];
+      } else {
+          echo "Order not found.";
+      }
+
+      // Define the data array
+      $data = [
+        "line_items" => $line_items,
+        "contact" => $contact,
+        "type" => "invoice",
+        "success_url" => $this->get_return_url($order),
+        "cancel_url" => wc_get_checkout_url(),
+        "failure_url" => "https://austindevs.github.io/paycove-checkout/"
+      ];
+
+      // Set up the request arguments
+      $args = [
+        'body'        => json_encode($data),
+        'headers'     => [
+            'Content-Type' => 'application/json'
+        ],
+        'method'      => 'POST',
+        'data_format' => 'body'
+      ];
+
+      $logger->info("Attemping API call wtih: " . print_r($args, true), ['source' => 'paycove-api-requests']);
+
+
+      try {
+        // Make the request
+        $response = wp_remote_post('https://local.paycove.io/api/checkout/e3e742f36fb750a0151631184000807d', $args);
+
+        // Check for errors
+        if (is_wp_error($response)) {
+            throw new Exception("Request Error: " . $response->get_error_message());
+        }
+
+        // Get and log the response body
+        $body = wp_remote_retrieve_body($response);
+
+        // Decode the JSON response
+        $response_data = json_decode($body, true);
+
+        if (json_last_error() === JSON_ERROR_NONE) {
+          // Successfully decoded JSON
+          $checkout_url = isset($response_data['checkout_url']) ? $response_data['checkout_url'] : null;
+          
+          // Log with WooCommerce logger if available
+          if (isset($logger)) {
+              $logger->info("Decoded API Response: " . print_r($response_data, true), ['source' => 'paycove-api-requests']);
+              $logger->info("Checkout URL: " . $checkout_url, ['source' => 'paycove-api-requests']);
+          }
+        } else {
+            // JSON decoding failed
+            error_log("JSON decode error: " . json_last_error_msg());
+        
+            if (isset($logger)) {
+                $logger->error("JSON decode error: " . json_last_error_msg(), ['source' => 'paycove-api-requests']);
+            }
+        }
+
+
+        
+
+        if (defined('WP_DEBUG') && WP_DEBUG && defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+            error_log("API Response Body: " . $body);
+        }
+
+        // Log with WooCommerce logger if available
+        if (isset($logger)) {
+            $logger->info("API Response Body Type: " . gettype($body), ['source' => 'paycove-api-requests']);
+            $logger->info("API Response Body: " . $body, ['source' => 'paycove-api-requests']);
+        }
+      } catch (Exception $e) {
+        // Log the exception message
+        if (defined('WP_DEBUG') && WP_DEBUG && defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+            error_log("Exception caught: " . $e->getMessage());
+        }
+
+        if (isset($logger)) {
+            $logger->error("Exception caught: " . $e->getMessage(), ['source' => 'paycove-api-requests']);
+        }
+
+        echo "An error occurred: " . $e->getMessage();
+        return [
+          'result'   => 'fail',
+          'redirect' => '',
+        ];
+      }
+
+      $logger->info("Should redirect...", ['source' => 'paycove-api-requests']);
+
       // This is what the classic checkout expects
       // wp-content/plugins/woocommerce/includes/class-wc-checkout.php
       // This will redirect to the the paycove page, and we can send whatever we want.
       // @todo probably need to reserve the stock here, update the order status, etc.
       return [
         'result'                => 'success',
-        'redirect'              => 'https://www.paycove.io/?order_id=' . $order_id,
+        'redirect'              => $checkout_url,
       ];
 
       // For the block checkout, the new file is wp-content/plugins/woocommerce/src/StoreApi/Routes/V1/Checkout.php
       // And the CheckoutTrait is used as well: wp-content/plugins/woocommerce/src/StoreApi/Utilities/CheckoutTrait.php
 
-
-
-        /**
-          * Array with parameters for API interaction
-          */
-        $args = array(
-
-        // ...
-
-        );
-
-        /**
-         * Your API integration can be built with wp_remote_post()
-         */
-        $response = wp_remote_post('{payment processor endpoint}', $args);
-
+        $localized_message = __( 'Payment processing failed. Please retry.', 'woo-pay-addons' );
+        $order->add_order_note( $localized_message );
 
         if(200 === wp_remote_retrieve_response_code($response)) {
 
