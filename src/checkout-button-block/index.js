@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { decodeEntities } from '@wordpress/html-entities';
 
-const { registerPaymentMethod, registerExpressPaymentMethod } = window.wc.wcBlocksRegistry;
+const { registerPaymentMethod, registerExpressPaymentMethod } =
+  window.wc.wcBlocksRegistry;
 const { getSetting } = window.wc.wcSettings;
 
 const settings = getSetting('paycove_data', {});
@@ -44,13 +45,16 @@ const Content = () => {
   const handleCreateOrder = async (e) => {
     e.preventDefault();
     // console.log(cart)
-    const response = await fetch('/wp-json/paycove/v1/create-pending-order-from-cart', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(cart),
-    });
+    const response = await fetch(
+      '/wp-json/paycove/v1/create-pending-order-from-cart',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cart),
+      }
+    );
     const data = await response.json();
     // console.log(data);
   };
@@ -85,15 +89,3 @@ registerPaymentMethod({
     features: settings.supports,
   },
 });
-
-// registerExpressPaymentMethod({
-//   name: 'paycove',
-//   label: <Label />,
-//   content: <Content />,
-//   edit: <Content />,
-//   canMakePayment: () => true,
-//   ariaLabel: label,
-//   supports: {
-//     features: settings.supports,
-//   },
-// });

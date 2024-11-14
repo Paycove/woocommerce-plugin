@@ -31,6 +31,7 @@ function paycove_init_gateway_class()
 {
     require_once __DIR__ . '/includes/checkout-block.php';
     require_once __DIR__ . '/includes/class-wc-paycove-gateway.php';
+    require_once __DIR__ . '/includes/class-wc-paycove-confirmation.php';
     require_once __DIR__ . '/includes/class-paycove-webhook.php';
     require_once __DIR__ . '/includes/class-create-order-from-cart.php';
 

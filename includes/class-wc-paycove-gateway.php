@@ -255,9 +255,14 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
 
       // Define the data array
       $data = [
+        "order_id" => $order_id,
+        "key" => $order->get_order_key(),
         "line_items" => $line_items,
         "contact" => $contact,
         "type" => "invoice",
+        "subtotal" => $order->get_subtotal(),
+        "tax" => $order->get_total_tax(),
+        "total" => $order->get_total(),
         "success_url" => $this->get_return_url($order),
         "cancel_url" => wc_get_checkout_url(),
         "failure_url" => "https://austindevs.github.io/paycove-checkout/"
@@ -275,6 +280,7 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
 
       $logger->info("Attemping API call wtih: " . print_r($args, true), ['source' => 'paycove-api-requests']);
 
+      $order->add_order_note('Attempting checkout on Paycove...', false);
 
       try {
         // Make the request
@@ -309,13 +315,6 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
             }
         }
 
-
-        
-
-        if (defined('WP_DEBUG') && WP_DEBUG && defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
-            error_log("API Response Body: " . $body);
-        }
-
         // Log with WooCommerce logger if available
         if (isset($logger)) {
             $logger->info("API Response Body Type: " . gettype($body), ['source' => 'paycove-api-requests']);
@@ -323,15 +322,12 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
         }
       } catch (Exception $e) {
         // Log the exception message
-        if (defined('WP_DEBUG') && WP_DEBUG && defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
-            error_log("Exception caught: " . $e->getMessage());
-        }
-
         if (isset($logger)) {
             $logger->error("Exception caught: " . $e->getMessage(), ['source' => 'paycove-api-requests']);
         }
 
-        echo "An error occurred: " . $e->getMessage();
+      $order->add_order_note('An error occurred: ' . $e->getMessage(), false);
+      
         return [
           'result'   => 'fail',
           'redirect' => '',
@@ -399,13 +395,13 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
     /**
      * In case you need a webhook, like PayPal IPN etc
      */
-    public function webhook()
-    {
+    // public function webhook()
+    // {
 
-        $order = wc_get_order($_GET[ 'id' ]);
-        $order->payment_complete();
-        $order->reduce_order_stock();
+    //     $order = wc_get_order($_GET[ 'id' ]);
+    //     $order->payment_complete();
+    //     $order->reduce_order_stock();
 
-        update_option('webhook_debug', $_GET);
-    }
+    //     update_option('webhook_debug', $_GET);
+    // }
 }
