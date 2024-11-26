@@ -5,7 +5,7 @@
  * Description: Integrate your store with Paycove.
  * Author: Nate Finch
  * Author URI: http://n8finch.com
- * Version: 1.0.0
+ * Version: 0.1.2
  * License: MIT
  */
 

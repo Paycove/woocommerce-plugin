@@ -252,16 +252,52 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
           foreach ($order->get_items() as $item_id => $item) {
               $product = $item->get_product();
 
+              // @todo move this to a class method
+              if (extension_loaded('gd')) {
+                echo "GD library is installed and enabled!";
+              } else {
+                  echo "GD library is not installed.";
+              }
+              if (function_exists('imagecreatefromjpeg')) {
+                echo "GD library is installed and working!";
+              } else {
+                  echo "GD library is not available.";
+              }
               // Get the Path of the full image
-              // $encoded_image = get_attached_file( $product->get_image_id() );
-              // $logger->info("Image: " . print_r($encoded_image, true), ['source' => 'paycove-api-requests']);
-              // if ( file_get_contents( $encoded_image ) !== false) {
-              //   $encoded_image = base64_encode( file_get_contents( $encoded_image ) );
-              // }
+              $encoded_image = get_attached_file( $product->get_image_id() );
+              $logger->info("Image: " . print_r($encoded_image, true), ['source' => 'paycove-api-requests']);
+
+              // Desired dimensions
+              $newWidth = 50;
+              $newHeight = 50;
+
+              // Load the original image
+              $image = imagecreatefromstring(file_get_contents($encoded_image));
+              $originalWidth = imagesx($image);
+              $originalHeight = imagesy($image);
+
+              // Create a blank canvas for the resized image
+              $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
+
+              // Resize the original image onto the blank canvas
+              imagecopyresampled($resizedImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
+
+              // Encode the resized image to Base64
+              ob_start();
+              imagepng($resizedImage);
+              $base64Image = base64_encode(ob_get_clean());
+
+              // Clean up resources
+              imagedestroy($image);
+              imagedestroy($resizedImage);
+
+              // Display the Base64 string
+              $logger->info("base64Image: " . print_r($base64Image, true), ['source' => 'paycove-api-requests']);
+
 
             // Get the URL
-            $encoded_image = wp_get_attachment_image_src( get_post_thumbnail_id( $item->get_product_id() ), 'woocommerce_thumbnail' );
-              $logger->info("Image: " . print_r($encoded_image[0], true), ['source' => 'paycove-api-requests']);
+            // $encoded_image = wp_get_attachment_image_src( get_post_thumbnail_id( $item->get_product_id() ), 'woocommerce_thumbnail' );
+            //   $logger->info("Image: " . print_r($encoded_image[0], true), ['source' => 'paycove-api-requests']);
 
 
               // $imageData = file_get_contents($encoded_image[0]);
