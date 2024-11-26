@@ -60,7 +60,7 @@ final class WC_Paycove_Gateway_Blocks_Support extends AbstractPaymentMethodType
             // almost the same way:
             // 'title'     => isset( $this->settings[ 'title' ] ) ? $this->settings[ 'title' ] : 'Default value';
             'description'  => $this->get_setting('description'),
-            'icon'         => plugin_dir_url( __DIR__ ) . 'assets/icon.png',
+            'icon'         => plugin_dir_url(__DIR__) . 'assets/icon.png',
             // if $this->gateway was initialized on line 15
             // 'supports'  => array_filter( $this->gateway->supports, [ $this->gateway, 'supports' ] ),
 

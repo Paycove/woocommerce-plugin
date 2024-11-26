@@ -1,6 +1,6 @@
 <?php
 
-if ( ! defined('ABSPATH') ) {
+if (! defined('ABSPATH')) {
     exit;
 }
 
@@ -11,19 +11,19 @@ if ( ! defined('ABSPATH') ) {
 
 class WC_Paycove_Gateway extends WC_Payment_Gateway
 {
-  public $id;
-  public $icon;
-  public $has_fields;
-  public $method_title;
-  public $method_description;
-  public $supports;
-  public $title;
-  public $description;
-  public $enabled;
-  public $template_id;
-  public $test_mode;
-  public $private_key;
-  public $publishable_key;
+    public $id;
+    public $icon;
+    public $has_fields;
+    public $method_title;
+    public $method_description;
+    public $supports;
+    public $title;
+    public $description;
+    public $enabled;
+    public $template_id;
+    public $test_mode;
+    public $private_key;
+    public $publishable_key;
 
 
 
@@ -238,228 +238,228 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
      */
     public function process_payment($order_id)
     {
-      // Include WooCommerce logger if WooCommerce is available
-      if (class_exists('WC_Logger')) {
-        $logger = new WC_Logger();
-      }
-
-      // Get the order object
-      $order = wc_get_order($order_id);
-
-      if ($order) {
-          // Get line items
-          $line_items = [];
-          foreach ($order->get_items() as $item_id => $item) {
-              $product = $item->get_product();
-
-              // @todo move this to a class method
-              if (extension_loaded('gd')) {
-                echo "GD library is installed and enabled!";
-              } else {
-                  echo "GD library is not installed.";
-              }
-              if (function_exists('imagecreatefromjpeg')) {
-                echo "GD library is installed and working!";
-              } else {
-                  echo "GD library is not available.";
-              }
-              // Get the Path of the full image
-              $encoded_image = get_attached_file( $product->get_image_id() );
-              $logger->info("Image: " . print_r($encoded_image, true), ['source' => 'paycove-api-requests']);
-
-              // Desired dimensions
-              $newWidth = 50;
-              $newHeight = 50;
-
-              // Load the original image
-              $image = imagecreatefromstring(file_get_contents($encoded_image));
-              $originalWidth = imagesx($image);
-              $originalHeight = imagesy($image);
-
-              // Create a blank canvas for the resized image
-              $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
-
-              // Resize the original image onto the blank canvas
-              imagecopyresampled($resizedImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
-
-              // Encode the resized image to Base64
-              ob_start();
-              imagepng($resizedImage);
-              $base64Image = base64_encode(ob_get_clean());
-
-              // Clean up resources
-              imagedestroy($image);
-              imagedestroy($resizedImage);
-
-              // Display the Base64 string
-              $logger->info("base64Image: " . print_r($base64Image, true), ['source' => 'paycove-api-requests']);
-
-
-            // Get the URL
-            // $encoded_image = wp_get_attachment_image_src( get_post_thumbnail_id( $item->get_product_id() ), 'woocommerce_thumbnail' );
-            //   $logger->info("Image: " . print_r($encoded_image[0], true), ['source' => 'paycove-api-requests']);
-
-
-              // $imageData = file_get_contents($encoded_image[0]);
-              // $logger->info("ImageData: " . print_r($imageData, true), ['source' => 'paycove-api-requests']);
-              // $base64Image = base64_encode($imageData);
-              // $logger->info("base64Image: " . print_r($base64Image, true), ['source' => 'paycove-api-requests']);
-              // $encoded = 'data:image/' . mime_content_type($encoded_image[0]) . ';base64,' . $base64Image;
-
-              $line_items[] = [
-                  'name'     => $item->get_name(),
-                  'price'    => $product ? wc_get_price_to_display($product) : '',
-                  'quantity' => $item->get_quantity(),
-                  // 'image'    => $encoded_image[0],
-              ];
-          }
-
-          // Retrieve customer contact information
-          $billing_address = [
-              'first_name' => $order->get_billing_first_name(),
-              'last_name' => $order->get_billing_last_name(),
-              'email' => $order->get_billing_email(),
-              'phone' => $order->get_billing_phone(),
-              'address_1' => $order->get_billing_address_1(),
-              'address_2' => $order->get_billing_address_2(),
-              'city' => $order->get_billing_city(),
-              'state' => $order->get_billing_state(),
-              'postcode' => $order->get_billing_postcode(),
-              'country' => $order->get_billing_country(),
-          ];
-
-          $shipping_address = [
-              'first_name' => $order->get_shipping_first_name(),
-              'last_name' => $order->get_shipping_last_name(),
-              'address_1' => $order->get_shipping_address_1(),
-              'address_2' => $order->get_shipping_address_2(),
-              'city' => $order->get_shipping_city(),
-              'state' => $order->get_shipping_state(),
-              'postcode' => $order->get_shipping_postcode(),
-              'country' => $order->get_shipping_country(),
-          ];
-
-          // Get contact information
-          $contact = [
-              'name'  => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
-              'email' => $order->get_billing_email(),
-              'first_name' => $order->get_billing_first_name(),
-              'last_name' => $order->get_billing_last_name(),
-              'phone' => $order->get_billing_phone(),
-              'line1' => $order->get_billing_address_1(),
-              'address_2' => $order->get_billing_address_2(),
-              'city' => $order->get_billing_city(),
-              'state' => $order->get_billing_state(),
-              'postal_code' => $order->get_billing_postcode(),
-              'country' => $order->get_billing_country(),
-              'billing_address' => $billing_address,
-              'shipping_address' => $shipping_address,
-          ];
-      } else {
-          echo "Order not found.";
-      }
-
-      // Define the data array
-      $data = [
-        "order_id" => $order_id,
-        "key" => $order->get_order_key(),
-        "line_items" => $line_items,
-        "contact" => $contact,
-        "type" => "invoice",
-        "template_id" => $this->template_id,
-        "subtotal" => $order->get_subtotal(),
-        "fees" => [
-          [ "label"=> "Tax", "amount"=> $order->get_total_tax(), "percent"=> null ],
-          [ "label"=> "Shipping", "amount"=> $order->get_shipping_total(), "percent"=> null ]
-        ],
-        "total" => $order->get_total(),
-        "success_url" => $this->get_return_url($order),
-        "cancel_url" => wc_get_checkout_url(),
-        "failure_url" => "https://austindevs.github.io/paycove-checkout/"
-      ];
-
-      // Set up the request arguments
-      $args = [
-        'body'        => json_encode($data),
-        'headers'     => [
-            'Content-Type' => 'application/json'
-        ],
-        'method'      => 'POST',
-        'data_format' => 'body'
-      ];
-
-      $logger->info("Attemping API call wtih: " . print_r($args, true), ['source' => 'paycove-api-requests']);
-
-      $order->add_order_note('Attempting checkout on Paycove...', false);
-
-      try {
-        // Make the request
-        $response = wp_remote_post('https://local.paycove.io/api/checkout/e3e742f36fb750a0151631184000807d', $args);
-
-        // Check for errors
-        if (is_wp_error($response)) {
-            throw new Exception("Request Error: " . $response->get_error_message());
+        // Include WooCommerce logger if WooCommerce is available
+        if (class_exists('WC_Logger')) {
+            $logger = new WC_Logger();
         }
 
-        // Get and log the response body
-        $body = wp_remote_retrieve_body($response);
+        // Get the order object
+        $order = wc_get_order($order_id);
 
-        // Decode the JSON response
-        $response_data = json_decode($body, true);
+        if ($order) {
+            // Get line items
+            $line_items = [];
+            foreach ($order->get_items() as $item_id => $item) {
+                $product = $item->get_product();
 
-        if (json_last_error() === JSON_ERROR_NONE) {
-          // Successfully decoded JSON
-          $checkout_url = isset($response_data['checkout_url']) ? $response_data['checkout_url'] : null;
-          
-          // Log with WooCommerce logger if available
-          if (isset($logger)) {
-              $logger->info("Decoded API Response: " . print_r($response_data, true), ['source' => 'paycove-api-requests']);
-              $logger->info("Checkout URL: " . $checkout_url, ['source' => 'paycove-api-requests']);
-          }
-        } else {
-            // JSON decoding failed
-            error_log("JSON decode error: " . json_last_error_msg());
-        
-            if (isset($logger)) {
-                $logger->error("JSON decode error: " . json_last_error_msg(), ['source' => 'paycove-api-requests']);
+                // @todo move this to a class method
+                if (extension_loaded('gd')) {
+                    echo "GD library is installed and enabled!";
+                } else {
+                    echo "GD library is not installed.";
+                }
+                if (function_exists('imagecreatefromjpeg')) {
+                    echo "GD library is installed and working!";
+                } else {
+                    echo "GD library is not available.";
+                }
+                // Get the Path of the full image
+                $encoded_image = get_attached_file($product->get_image_id());
+                $logger->info("Image: " . print_r($encoded_image, true), ['source' => 'paycove-api-requests']);
+
+                // Desired dimensions
+                $newWidth = 50;
+                $newHeight = 50;
+
+                // Load the original image
+                $image = imagecreatefromstring(file_get_contents($encoded_image));
+                $originalWidth = imagesx($image);
+                $originalHeight = imagesy($image);
+
+                // Create a blank canvas for the resized image
+                $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
+
+                // Resize the original image onto the blank canvas
+                imagecopyresampled($resizedImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
+
+                // Encode the resized image to Base64
+                ob_start();
+                imagepng($resizedImage);
+                $base64Image = base64_encode(ob_get_clean());
+
+                // Clean up resources
+                imagedestroy($image);
+                imagedestroy($resizedImage);
+
+                // Display the Base64 string
+                $logger->info("base64Image: " . print_r($base64Image, true), ['source' => 'paycove-api-requests']);
+
+
+                // Get the URL
+                // $encoded_image = wp_get_attachment_image_src( get_post_thumbnail_id( $item->get_product_id() ), 'woocommerce_thumbnail' );
+                //   $logger->info("Image: " . print_r($encoded_image[0], true), ['source' => 'paycove-api-requests']);
+
+
+                // $imageData = file_get_contents($encoded_image[0]);
+                // $logger->info("ImageData: " . print_r($imageData, true), ['source' => 'paycove-api-requests']);
+                // $base64Image = base64_encode($imageData);
+                // $logger->info("base64Image: " . print_r($base64Image, true), ['source' => 'paycove-api-requests']);
+                // $encoded = 'data:image/' . mime_content_type($encoded_image[0]) . ';base64,' . $base64Image;
+
+                $line_items[] = [
+                    'name'     => $item->get_name(),
+                    'price'    => $product ? wc_get_price_to_display($product) : '',
+                    'quantity' => $item->get_quantity(),
+                    // 'image'    => $encoded_image[0],
+                ];
             }
+
+            // Retrieve customer contact information
+            $billing_address = [
+                'first_name' => $order->get_billing_first_name(),
+                'last_name' => $order->get_billing_last_name(),
+                'email' => $order->get_billing_email(),
+                'phone' => $order->get_billing_phone(),
+                'address_1' => $order->get_billing_address_1(),
+                'address_2' => $order->get_billing_address_2(),
+                'city' => $order->get_billing_city(),
+                'state' => $order->get_billing_state(),
+                'postcode' => $order->get_billing_postcode(),
+                'country' => $order->get_billing_country(),
+            ];
+
+            $shipping_address = [
+                'first_name' => $order->get_shipping_first_name(),
+                'last_name' => $order->get_shipping_last_name(),
+                'address_1' => $order->get_shipping_address_1(),
+                'address_2' => $order->get_shipping_address_2(),
+                'city' => $order->get_shipping_city(),
+                'state' => $order->get_shipping_state(),
+                'postcode' => $order->get_shipping_postcode(),
+                'country' => $order->get_shipping_country(),
+            ];
+
+            // Get contact information
+            $contact = [
+                'name'  => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+                'email' => $order->get_billing_email(),
+                'first_name' => $order->get_billing_first_name(),
+                'last_name' => $order->get_billing_last_name(),
+                'phone' => $order->get_billing_phone(),
+                'line1' => $order->get_billing_address_1(),
+                'address_2' => $order->get_billing_address_2(),
+                'city' => $order->get_billing_city(),
+                'state' => $order->get_billing_state(),
+                'postal_code' => $order->get_billing_postcode(),
+                'country' => $order->get_billing_country(),
+                'billing_address' => $billing_address,
+                'shipping_address' => $shipping_address,
+            ];
+        } else {
+            echo "Order not found.";
         }
 
-        // Log with WooCommerce logger if available
-        if (isset($logger)) {
-            $logger->info("API Response Body Type: " . gettype($body), ['source' => 'paycove-api-requests']);
-            $logger->info("API Response Body: " . $body, ['source' => 'paycove-api-requests']);
-        }
-      } catch (Exception $e) {
-        // Log the exception message
-        if (isset($logger)) {
-            $logger->error("Exception caught: " . $e->getMessage(), ['source' => 'paycove-api-requests']);
-        }
-
-      $order->add_order_note('An error occurred: ' . $e->getMessage(), false);
-      
-        return [
-          'result'   => 'fail',
-          'redirect' => '',
+        // Define the data array
+        $data = [
+          "order_id" => $order_id,
+          "key" => $order->get_order_key(),
+          "line_items" => $line_items,
+          "contact" => $contact,
+          "type" => "invoice",
+          "template_id" => $this->template_id,
+          "subtotal" => $order->get_subtotal(),
+          "fees" => [
+            [ "label" => "Tax", "amount" => $order->get_total_tax(), "percent" => null ],
+            [ "label" => "Shipping", "amount" => $order->get_shipping_total(), "percent" => null ]
+          ],
+          "total" => $order->get_total(),
+          "success_url" => $this->get_return_url($order),
+          "cancel_url" => wc_get_checkout_url(),
+          "failure_url" => "https://austindevs.github.io/paycove-checkout/"
         ];
-      }
 
-      $logger->info("Should redirect...", ['source' => 'paycove-api-requests']);
+        // Set up the request arguments
+        $args = [
+          'body'        => json_encode($data),
+          'headers'     => [
+              'Content-Type' => 'application/json'
+          ],
+          'method'      => 'POST',
+          'data_format' => 'body'
+        ];
 
-      // This is what the classic checkout expects
-      // wp-content/plugins/woocommerce/includes/class-wc-checkout.php
-      // This will redirect to the the paycove page, and we can send whatever we want.
-      // @todo probably need to reserve the stock here, update the order status, etc.
-      return [
-        'result'                => 'success',
-        'redirect'              => $checkout_url,
-      ];
+        $logger->info("Attemping API call wtih: " . print_r($args, true), ['source' => 'paycove-api-requests']);
 
-      // For the block checkout, the new file is wp-content/plugins/woocommerce/src/StoreApi/Routes/V1/Checkout.php
-      // And the CheckoutTrait is used as well: wp-content/plugins/woocommerce/src/StoreApi/Utilities/CheckoutTrait.php
+        $order->add_order_note('Attempting checkout on Paycove...', false);
 
-        $localized_message = __( 'Payment processing failed. Please retry.', 'woo-pay-addons' );
-        $order->add_order_note( $localized_message );
+        try {
+            // Make the request
+            $response = wp_remote_post('https://local.paycove.io/api/checkout/e3e742f36fb750a0151631184000807d', $args);
+
+            // Check for errors
+            if (is_wp_error($response)) {
+                throw new Exception("Request Error: " . $response->get_error_message());
+            }
+
+            // Get and log the response body
+            $body = wp_remote_retrieve_body($response);
+
+            // Decode the JSON response
+            $response_data = json_decode($body, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                // Successfully decoded JSON
+                $checkout_url = isset($response_data['checkout_url']) ? $response_data['checkout_url'] : null;
+
+                // Log with WooCommerce logger if available
+                if (isset($logger)) {
+                    $logger->info("Decoded API Response: " . print_r($response_data, true), ['source' => 'paycove-api-requests']);
+                    $logger->info("Checkout URL: " . $checkout_url, ['source' => 'paycove-api-requests']);
+                }
+            } else {
+                // JSON decoding failed
+                error_log("JSON decode error: " . json_last_error_msg());
+
+                if (isset($logger)) {
+                    $logger->error("JSON decode error: " . json_last_error_msg(), ['source' => 'paycove-api-requests']);
+                }
+            }
+
+            // Log with WooCommerce logger if available
+            if (isset($logger)) {
+                $logger->info("API Response Body Type: " . gettype($body), ['source' => 'paycove-api-requests']);
+                $logger->info("API Response Body: " . $body, ['source' => 'paycove-api-requests']);
+            }
+        } catch (Exception $e) {
+            // Log the exception message
+            if (isset($logger)) {
+                $logger->error("Exception caught: " . $e->getMessage(), ['source' => 'paycove-api-requests']);
+            }
+
+            $order->add_order_note('An error occurred: ' . $e->getMessage(), false);
+
+            return [
+              'result'   => 'fail',
+              'redirect' => '',
+            ];
+        }
+
+        $logger->info("Should redirect...", ['source' => 'paycove-api-requests']);
+
+        // This is what the classic checkout expects
+        // wp-content/plugins/woocommerce/includes/class-wc-checkout.php
+        // This will redirect to the the paycove page, and we can send whatever we want.
+        // @todo probably need to reserve the stock here, update the order status, etc.
+        return [
+          'result'                => 'success',
+          'redirect'              => $checkout_url,
+        ];
+
+        // For the block checkout, the new file is wp-content/plugins/woocommerce/src/StoreApi/Routes/V1/Checkout.php
+        // And the CheckoutTrait is used as well: wp-content/plugins/woocommerce/src/StoreApi/Utilities/CheckoutTrait.php
+
+        $localized_message = __('Payment processing failed. Please retry.', 'woo-pay-addons');
+        $order->add_order_note($localized_message);
 
         if(200 === wp_remote_retrieve_response_code($response)) {
 
