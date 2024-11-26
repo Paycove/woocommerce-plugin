@@ -11,6 +11,22 @@ if ( ! defined('ABSPATH') ) {
 
 class WC_Paycove_Gateway extends WC_Payment_Gateway
 {
+  public $id;
+  public $icon;
+  public $has_fields;
+  public $method_title;
+  public $method_description;
+  public $supports;
+  public $title;
+  public $description;
+  public $enabled;
+  public $template_id;
+  public $test_mode;
+  public $private_key;
+  public $publishable_key;
+
+
+
     /**
      * Class constructor, more about it in Step 3
      */
@@ -37,9 +53,10 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->enabled = $this->get_option('enabled');
-        // $this->testmode = 'yes' === $this->get_option('testmode');
-        // $this->private_key = $this->testmode ? $this->get_option('test_private_key') : $this->get_option('private_key');
-        // $this->publishable_key = $this->testmode ? $this->get_option('test_publishable_key') : $this->get_option('publishable_key');
+        $this->template_id = $this->get_option('paycove_invoice_template_id');
+        $this->test_mode = 'yes' === $this->get_option('test_mode');
+        $this->private_key = $this->test_mode ? $this->get_option('test_private_key') : $this->get_option('private_key');
+        $this->publishable_key = $this->test_mode ? $this->get_option('test_publishable_key') : $this->get_option('publishable_key');
 
         // This action hook saves the settings
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ));
@@ -77,7 +94,7 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
           'description' => 'This controls the description which the user sees during checkout.',
           'default'     => 'Pay with your credit card via our super-cool payment gateway.',
         ),
-        'testmode' => array(
+        'test_mode' => array(
           'title'       => 'Test mode',
           'label'       => 'Enable Test Mode',
           'type'        => 'checkbox',
@@ -124,7 +141,7 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
         // ok, let's display some description before the payment form
         if($this->description) {
             // you can instructions for test mode, I mean test card numbers etc.
-            if($this->testmode) {
+            if($this->test_mode) {
                 $this->description .= ' TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a href="#">documentation</a>.';
                 $this->description  = trim($this->description);
             }
@@ -163,7 +180,6 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
      */
     public function payment_scripts()
     {
-
         // we need JavaScript to process a token only on cart/checkout pages, right?
         if(! is_cart() && ! is_checkout() && ! isset($_GET[ 'pay_for_order' ])) {
             return;
@@ -180,7 +196,7 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
         }
 
         // do not work with card detailes without SSL unless your website is in a test mode
-        if(! $this->testmode && ! is_ssl()) {
+        if(! $this->test_mode && ! is_ssl()) {
             return;
         }
 
@@ -200,7 +216,6 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
         );
 
         wp_enqueue_script('woocommerce_paycove');
-
     }
 
     /**
@@ -236,18 +251,73 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
           $line_items = [];
           foreach ($order->get_items() as $item_id => $item) {
               $product = $item->get_product();
-              
+
+              // Get the Path of the full image
+              // $encoded_image = get_attached_file( $product->get_image_id() );
+              // $logger->info("Image: " . print_r($encoded_image, true), ['source' => 'paycove-api-requests']);
+              // if ( file_get_contents( $encoded_image ) !== false) {
+              //   $encoded_image = base64_encode( file_get_contents( $encoded_image ) );
+              // }
+
+            // Get the URL
+            $encoded_image = wp_get_attachment_image_src( get_post_thumbnail_id( $item->get_product_id() ), 'woocommerce_thumbnail' );
+              $logger->info("Image: " . print_r($encoded_image[0], true), ['source' => 'paycove-api-requests']);
+
+
+              // $imageData = file_get_contents($encoded_image[0]);
+              // $logger->info("ImageData: " . print_r($imageData, true), ['source' => 'paycove-api-requests']);
+              // $base64Image = base64_encode($imageData);
+              // $logger->info("base64Image: " . print_r($base64Image, true), ['source' => 'paycove-api-requests']);
+              // $encoded = 'data:image/' . mime_content_type($encoded_image[0]) . ';base64,' . $base64Image;
+
               $line_items[] = [
                   'name'     => $item->get_name(),
                   'price'    => $product ? wc_get_price_to_display($product) : '',
-                  'quantity' => $item->get_quantity()
+                  'quantity' => $item->get_quantity(),
+                  // 'image'    => $encoded_image[0],
               ];
           }
+
+          // Retrieve customer contact information
+          $billing_address = [
+              'first_name' => $order->get_billing_first_name(),
+              'last_name' => $order->get_billing_last_name(),
+              'email' => $order->get_billing_email(),
+              'phone' => $order->get_billing_phone(),
+              'address_1' => $order->get_billing_address_1(),
+              'address_2' => $order->get_billing_address_2(),
+              'city' => $order->get_billing_city(),
+              'state' => $order->get_billing_state(),
+              'postcode' => $order->get_billing_postcode(),
+              'country' => $order->get_billing_country(),
+          ];
+
+          $shipping_address = [
+              'first_name' => $order->get_shipping_first_name(),
+              'last_name' => $order->get_shipping_last_name(),
+              'address_1' => $order->get_shipping_address_1(),
+              'address_2' => $order->get_shipping_address_2(),
+              'city' => $order->get_shipping_city(),
+              'state' => $order->get_shipping_state(),
+              'postcode' => $order->get_shipping_postcode(),
+              'country' => $order->get_shipping_country(),
+          ];
 
           // Get contact information
           $contact = [
               'name'  => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
               'email' => $order->get_billing_email(),
+              'first_name' => $order->get_billing_first_name(),
+              'last_name' => $order->get_billing_last_name(),
+              'phone' => $order->get_billing_phone(),
+              'line1' => $order->get_billing_address_1(),
+              'address_2' => $order->get_billing_address_2(),
+              'city' => $order->get_billing_city(),
+              'state' => $order->get_billing_state(),
+              'postal_code' => $order->get_billing_postcode(),
+              'country' => $order->get_billing_country(),
+              'billing_address' => $billing_address,
+              'shipping_address' => $shipping_address,
           ];
       } else {
           echo "Order not found.";
@@ -260,8 +330,12 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
         "line_items" => $line_items,
         "contact" => $contact,
         "type" => "invoice",
+        "template_id" => $this->template_id,
         "subtotal" => $order->get_subtotal(),
-        "tax" => $order->get_total_tax(),
+        "fees" => [
+          [ "label"=> "Tax", "amount"=> $order->get_total_tax(), "percent"=> null ],
+          [ "label"=> "Shipping", "amount"=> $order->get_shipping_total(), "percent"=> null ]
+        ],
         "total" => $order->get_total(),
         "success_url" => $this->get_return_url($order),
         "cancel_url" => wc_get_checkout_url(),
