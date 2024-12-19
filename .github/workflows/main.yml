@@ -1,9 +1,11 @@
 name: Build and Release
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number'
+        required: true
 
 jobs:
   build:
