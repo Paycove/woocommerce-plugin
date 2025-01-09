@@ -32,6 +32,9 @@ jobs:
     - name: Remove dot directories
       run: find . -type d -name '.*' -not -name '.' -not -name '..' -exec rm -rf {} +
 
+    - name: Remove Node Modules
+      run: rm -rf node_modules
+
     - name: Zip repository
       run: zip -rq  paycove-woocomerce.zip .
 
