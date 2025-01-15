@@ -52,7 +52,7 @@ class WC_Paycove_Confirmation
                 echo '<p><strong>Deal ID:</strong> ' . esc_html($deal_id) . '</p>';
             }
             if ($unique_deal_id) {
-                echo '<p><strong>Unique Deal ID:</strong> ' . sprintf('<a href="https://staging.paycove.io/checkout/%s" target="_blank">%s</a>', esc_html($unique_deal_id), esc_html($unique_deal_id)) . '</p>';
+                echo '<p><strong>Receipt:</strong> ' . sprintf('<a href="https://staging.paycove.io/checkout/%s" target="_blank">%s</a>', esc_html($unique_deal_id), esc_html($unique_deal_id)) . '</p>';
             }
             echo '</div>';
         }
@@ -79,7 +79,7 @@ class WC_Paycove_Confirmation
                 echo '<p><strong>Deal ID:</strong> ' . esc_html($deal_id) . '</p>';
             }
             if ($unique_deal_id) {
-                echo '<p><strong>Unique Deal ID:</strong> ' . sprintf('<a href="https://staging.paycove.io/checkout/%s" target="_blank">%s</a>', esc_html($unique_deal_id), esc_html($unique_deal_id)) . '</p>';
+                echo '<p><strong>Receipt:</strong> ' . sprintf('<a href="https://staging.paycove.io/checkout/%s" target="_blank">%s</a>', esc_html($unique_deal_id), esc_html($unique_deal_id)) . '</p>';
             }
             echo '</div>';
             $text .= ob_get_clean();
@@ -147,7 +147,7 @@ class WC_Paycove_Confirmation
 
                 // Log with WooCommerce logger if available
                 if (isset($logger)) {
-                    $logger->info("Unique Deal ID: " . $unique_deal_id, ['source' => 'paycove-api-requests']);
+                    $logger->info("Receipt: " . $unique_deal_id, ['source' => 'paycove-api-requests']);
                     $logger->info("Payment Status: " . $payment_status, ['source' => 'paycove-api-requests']);
                 }
             } else {
@@ -190,7 +190,7 @@ class WC_Paycove_Confirmation
             $order->update_meta_data('_unique_deal_id', $unique_deal_id);
             $order->update_meta_data('_payment_status', 'on-hold');
             // Add note with the deail_id and unique_deal_id, linking out to the Paycove unique deal ID.
-            $order->add_order_note(sprintf('<a href="https://staging.paycove.io/checkout/%s" target="_blank">View Unique Deal ID on Paycove</a>', $unique_deal_id));
+            $order->add_order_note(sprintf('<a href="https://staging.paycove.io/checkout/%s" target="_blank">View receipt on Paycove</a>', $unique_deal_id));
             $order->add_order_note(sprintf('Order is %s on Paycove.', $payment_status));
             $order->add_order_note(sprintf('Deal ID: %s', $deal_id));
             // Reduce stock levels.
