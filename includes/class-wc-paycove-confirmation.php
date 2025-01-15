@@ -176,8 +176,9 @@ class WC_Paycove_Confirmation
             wc_reduce_stock_levels($order_id);
             // Empty cart.
             WC()->cart->empty_cart();
-            // Mark the order as completed
-            // $order->update_status('completed', 'Order completed .');
+            // Mark the order as completed.
+            // If payment is complete, let WooCommerce handle the status and use $order->payment_complete(). WooCommerce will use either Completed or Processing status and handle stock.
+            // See: https://developer.woocommerce.com/docs/woocommerce-payment-gateway-api/#2-notes-on-direct-gateways
             $order->payment_complete();
 
             $order->save();
@@ -198,6 +199,8 @@ class WC_Paycove_Confirmation
             // Empty cart.
             WC()->cart->empty_cart();
             // Mark the order as On Hold, admin will need to manually update the order status.
+            // If the order has completed but the admin needs to manually verify payment, use On-Hold.
+            // See: https://developer.woocommerce.com/docs/woocommerce-payment-gateway-api/#2-notes-on-direct-gateways
             $order->update_status('on-hold', 'Order on hold, waiting for completed payment.');
 
             $order->save();
