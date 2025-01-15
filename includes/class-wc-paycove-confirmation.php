@@ -6,11 +6,11 @@ if (! defined('ABSPATH')) {
 
 class WC_Paycove_Confirmation
 {
-  public $settings = [];
-  public $test_mode;
-  public $paycove_account_id;
-  public $paycove_invoice_template_id;
-  public $paycove_api_url;
+    public $settings = [];
+    public $test_mode;
+    public $paycove_account_id;
+    public $paycove_invoice_template_id;
+    public $paycove_api_url;
 
     /**
      * Class constructor
