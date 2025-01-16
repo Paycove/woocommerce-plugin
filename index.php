@@ -5,7 +5,7 @@
  * Description: Integrate your store with Paycove.
  * Author: Paycove
  * Author URI: https://paycove.io
- * Version: 0.1.4
+ * Version: 0.1.5
  * License: MIT
  * Text Domain: paycove
  */
@@ -39,3 +39,6 @@ function paycove_init_gateway_class()
         require_once $file;
     }
 }
+
+
+// @review Some super cool new feature here
