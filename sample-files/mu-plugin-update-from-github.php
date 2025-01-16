@@ -1,6 +1,5 @@
 <?php
 
-
 function paycove_check_github_plugin_update($transient)
 {
     // Check for the paycove_last_checked transient.
