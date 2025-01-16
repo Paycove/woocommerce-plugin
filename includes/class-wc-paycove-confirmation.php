@@ -6,6 +6,12 @@ if (! defined('ABSPATH')) {
 
 class WC_Paycove_Confirmation
 {
+    public $settings = [];
+    public $test_mode;
+    public $paycove_account_id;
+    public $paycove_invoice_template_id;
+    public $paycove_api_url;
+
     /**
      * Class constructor
      */
@@ -14,6 +20,19 @@ class WC_Paycove_Confirmation
         add_action('template_redirect', [ $this, 'custom_redirect_on_thank_you' ]);
         add_action('woocommerce_view_order', [ $this, 'display_deal_ids_in_order_details' ], 10, 1);
         add_filter('woocommerce_thankyou_order_received_text', [ $this, 'display_deal_ids_on_confirmation_page' ], 10, 2);
+
+        $this->get_wc_paycove_settings();
+
+        $this->test_mode = 'yes' === $this->settings['test_mode'];
+        $this->paycove_account_id = $this->settings['paycove_account_id'] ?? '';
+        $this->paycove_invoice_template_id = $this->settings['paycove_invoice_template_id'] ?? '';
+        $this->paycove_api_url = $this->test_mode ? 'https://staging.paycove.io/' : 'https://app.paycove.io/';
+    }
+
+    public function get_wc_paycove_settings()
+    {
+        $settings = get_option('woocommerce_paycove_settings', []);
+        $this->settings = $settings;
     }
 
     public function display_deal_ids_in_order_details($order_id)
@@ -33,7 +52,7 @@ class WC_Paycove_Confirmation
                 echo '<p><strong>Deal ID:</strong> ' . esc_html($deal_id) . '</p>';
             }
             if ($unique_deal_id) {
-                echo '<p><strong>Unique Deal ID:</strong> ' . sprintf('<a href="https://feature.paycove.io/checkout/%s" target="_blank">%s</a>', esc_html($unique_deal_id), esc_html($unique_deal_id)) . '</p>';
+                echo '<p><strong>Receipt:</strong> ' . sprintf('<a href="https://staging.paycove.io/checkout/%s" target="_blank">%s</a>', esc_html($unique_deal_id), esc_html($unique_deal_id)) . '</p>';
             }
             echo '</div>';
         }
@@ -60,7 +79,7 @@ class WC_Paycove_Confirmation
                 echo '<p><strong>Deal ID:</strong> ' . esc_html($deal_id) . '</p>';
             }
             if ($unique_deal_id) {
-                echo '<p><strong>Unique Deal ID:</strong> ' . sprintf('<a href="https://feature.paycove.io/checkout/%s" target="_blank">%s</a>', esc_html($unique_deal_id), esc_html($unique_deal_id)) . '</p>';
+                echo '<p><strong>Receipt:</strong> ' . sprintf('<a href="https://staging.paycove.io/checkout/%s" target="_blank">%s</a>', esc_html($unique_deal_id), esc_html($unique_deal_id)) . '</p>';
             }
             echo '</div>';
             $text .= ob_get_clean();
@@ -106,9 +125,8 @@ class WC_Paycove_Confirmation
             }
 
             // Make the request
-            $response = wp_remote_get("https://local.paycove.io/api/deals/$unique_deal_id/status");
             // @todo replace with the actual URL:
-            // $response = wp_remote_get("https://local.paycove.io/api/deals/$unique_deal_id/status");
+            $response = wp_remote_get($this->paycove_api_url. "api/deals/$unique_deal_id/status");
 
             // Check for errors
             if (is_wp_error($response)) {
@@ -129,7 +147,7 @@ class WC_Paycove_Confirmation
 
                 // Log with WooCommerce logger if available
                 if (isset($logger)) {
-                    $logger->info("Unique Deal ID: " . $unique_deal_id, ['source' => 'paycove-api-requests']);
+                    $logger->info("Receipt: " . $unique_deal_id, ['source' => 'paycove-api-requests']);
                     $logger->info("Payment Status: " . $payment_status, ['source' => 'paycove-api-requests']);
                 }
             } else {
@@ -151,15 +169,16 @@ class WC_Paycove_Confirmation
             $order->update_meta_data('_deal_id', $deal_id);
             $order->update_meta_data('_unique_deal_id', $unique_deal_id);
             // Add note with the deail_id and unique_deal_id, linking out to the Paycove unique deal ID.
-            $order->add_order_note(sprintf('<a href="https://feature.paycove.io/checkout/%s" target="_blank">View UDID on Paycove</a>', $unique_deal_id));
-            $order->add_order_note(sprintf('Order is %s.', $payment_status));
+            $order->add_order_note(sprintf('<a href="https://staging.paycove.io/checkout/%s" target="_blank">View UDID on Paycove</a>', $unique_deal_id));
+            $order->add_order_note(sprintf('Order is %s on Paycove.', $payment_status));
             $order->add_order_note(sprintf('Deal ID: %s', $deal_id));
             // Reduce stock levels.
             wc_reduce_stock_levels($order_id);
             // Empty cart.
             WC()->cart->empty_cart();
-            // Mark the order as completed
-            // $order->update_status('completed', 'Order completed .');
+            // Mark the order as completed.
+            // If payment is complete, let WooCommerce handle the status and use $order->payment_complete(). WooCommerce will use either Completed or Processing status and handle stock.
+            // See: https://developer.woocommerce.com/docs/woocommerce-payment-gateway-api/#2-notes-on-direct-gateways
             $order->payment_complete();
 
             $order->save();
@@ -172,14 +191,16 @@ class WC_Paycove_Confirmation
             $order->update_meta_data('_unique_deal_id', $unique_deal_id);
             $order->update_meta_data('_payment_status', 'on-hold');
             // Add note with the deail_id and unique_deal_id, linking out to the Paycove unique deal ID.
-            $order->add_order_note(sprintf('<a href="https://feature.paycove.io/checkout/%s" target="_blank">View Unique Deal ID on Paycove</a>', $unique_deal_id));
-            $order->add_order_note(sprintf('Order is %s.', $payment_status));
+            $order->add_order_note(sprintf('<a href="https://staging.paycove.io/checkout/%s" target="_blank">View receipt on Paycove</a>', $unique_deal_id));
+            $order->add_order_note(sprintf('Order is %s on Paycove.', $payment_status));
             $order->add_order_note(sprintf('Deal ID: %s', $deal_id));
             // Reduce stock levels.
             wc_reduce_stock_levels($order_id);
             // Empty cart.
             WC()->cart->empty_cart();
             // Mark the order as On Hold, admin will need to manually update the order status.
+            // If the order has completed but the admin needs to manually verify payment, use On-Hold.
+            // See: https://developer.woocommerce.com/docs/woocommerce-payment-gateway-api/#2-notes-on-direct-gateways
             $order->update_status('on-hold', 'Order on hold, waiting for completed payment.');
 
             $order->save();

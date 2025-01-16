@@ -288,8 +288,7 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
 
         try {
             // Make the request
-            $response = wp_remote_post('https://local.paycove.io/api/checkout/e3e742f36fb750a0151631184000807d', $args);
-            // $response = wp_remote_post( $this->paycove_api_url . $this->paycove_account_id, $args);
+            $response = wp_remote_post($this->paycove_api_url . $this->paycove_account_id, $args);
 
             // Check for errors.
             if (is_wp_error($response)) {
