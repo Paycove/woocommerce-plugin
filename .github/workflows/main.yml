@@ -26,17 +26,8 @@ jobs:
     - name: Build project
       run: npm run build
 
-    - name: Remove dot files
-      run: find . -type f -name '.*' -not -name '.' -not -name '..' -delete
-    
-    - name: Remove dot directories
-      run: find . -type d -name '.*' -not -name '.' -not -name '..' -exec rm -rf {} +
-
-    - name: Remove Node Modules
-      run: rm -rf node_modules
-
-    - name: Zip repository
-      run: zip -rq  paycove-woocomerce.zip .
+    - name: Zip plugin
+      run: npm run plugin-zip
 
     - name: Create Release
       id: create_release
@@ -55,6 +46,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./paycove-woocomerce.zip
-        asset_name: paycove-woocomerce.zip
+        asset_path: ./paycove.zip
+        asset_name: paycove.zip
         asset_content_type: application/zip
