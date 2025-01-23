@@ -5,7 +5,7 @@
  * Description: Integrate your store with Paycove.
  * Author: Paycove
  * Author URI: https://paycove.io
- * Version: 0.1.6
+ * Version: 0.1.7
  * License: MIT
  * Text Domain: paycove
  */
@@ -16,7 +16,7 @@ if (! defined('ABSPATH')) {
 
 // Define PATH and URL constants.
 define('PAYCOVE_GATEWAY_PATH', plugin_dir_path(__FILE__));
-define('PAYCOVE_GATEWAY_URL', plugin_dir_url(__FILE__));
+define('PAYCOVE_GATEWAY_URL', untrailingslashit(plugin_dir_url(__FILE__)));
 
 /**
  * This action hook registers our PHP class as a WooCommerce payment gateway
