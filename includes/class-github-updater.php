@@ -15,11 +15,10 @@ class Github_Updater
     /**
      * check_github_plugin_update
      *
-     * @param object $transient
+     * @param object|bool $transient
      * @return object
      */
-    public function check_github_plugin_update(object $transient): object
-    {
+    public function check_github_plugin_update($transient) {
         // Check for the paycove_last_checked transient.
         // @todo reface to use the $data transient
         $last_checked = get_transient('paycove_last_checked');
