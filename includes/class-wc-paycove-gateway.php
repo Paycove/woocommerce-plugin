@@ -49,8 +49,8 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
         $this->test_mode = 'yes' === $this->get_option('test_mode');
         $this->paycove_account_id = $this->get_option('paycove_account_id');
         $this->paycove_invoice_template_id = $this->get_option('paycove_invoice_template_id');
-        $this->paycove_api_url = $this->test_mode ? 'https://staging.paycove.io/api/checkout/' : 'https://app.paycove.io/api/checkout/';
-        $this->paycove_base_url = $this->test_mode ? 'https://staging.paycove.io/' : 'https://app.paycove.io/';
+        $this->paycove_api_url = $this->test_mode ? 'https://staging.paycove.io/api/checkout/' : 'https://paycove.io/api/checkout/';
+        $this->paycove_base_url = $this->test_mode ? 'https://staging.paycove.io/' : 'https://paycove.io/';
         $this->private_key = $this->test_mode ? $this->get_option('test_private_key') : $this->get_option('private_key');
         $this->publishable_key = $this->test_mode ? $this->get_option('test_publishable_key') : $this->get_option('publishable_key');
 
