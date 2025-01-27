@@ -26,7 +26,7 @@ class WC_Paycove_Confirmation
         $this->test_mode = 'yes' === $this->settings['test_mode'];
         $this->paycove_account_id = $this->settings['paycove_account_id'] ?? '';
         $this->paycove_invoice_template_id = $this->settings['paycove_invoice_template_id'] ?? '';
-        $this->paycove_api_url = $this->test_mode ? 'https://staging.paycove.io/' : 'https://app.paycove.io/';
+        $this->paycove_api_url = $this->test_mode ? 'https://staging.paycove.io/' : 'https://paycove.io/';
     }
 
     public function get_wc_paycove_settings()
