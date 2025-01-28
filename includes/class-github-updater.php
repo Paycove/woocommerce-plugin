@@ -19,6 +19,11 @@ class Github_Updater
      * @return object
      */
     public function check_github_plugin_update($transient) {
+        // If the transient is not an object, return it as is.
+        if (!is_object($transient)) {
+            return $transient;
+        }
+
         // Check for the paycove_last_checked transient.
         // @todo reface to use the $data transient
         $last_checked = get_transient('paycove_last_checked');

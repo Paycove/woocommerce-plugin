@@ -5,7 +5,7 @@
  * Description: Integrate your store with Paycove.
  * Author: Paycove
  * Author URI: https://paycove.io
- * Version: 0.1.8
+ * Version: 0.1.9
  * License: MIT
  * Text Domain: paycove
  */
