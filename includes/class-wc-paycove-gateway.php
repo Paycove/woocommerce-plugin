@@ -107,7 +107,7 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
           'paycove_invoice_template_id' => array(
             'title'       => 'Paycove Invoice Template ID',
             'type'        => 'text',
-            'description' => 'This is the template ID of your provided by Paycove.<br/><strong>This should not be blank.</strong> See your templates <a href="' . $this->paycove_base_url . 'invoice-template" target="_blank">here</a>.',
+            'description' => 'This is the template ID of your provided by Paycove.<br/>See your templates <a href="' . $this->paycove_base_url . 'invoice-template" target="_blank">here</a>.',
             'required'    => 'required'
           ),
         );
@@ -262,7 +262,6 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
           "line_items" => $line_items,
           "contact" => $contact,
           "type" => "invoice",
-          "template_id" => $this->paycove_invoice_template_id,
           "subtotal" => $order->get_subtotal(),
           "fees" => [
             [ "label" => "Tax", "amount" => $order->get_total_tax(), "percent" => null ],
@@ -273,6 +272,11 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
           "cancel_url" => wc_get_checkout_url(),
           "failure_url" => wc_get_checkout_url(),
         ];
+
+        // Add the template ID if it is set.
+        if( '' !== $this->paycove_invoice_template_id ) {
+            $data['template_id'] = $this->paycove_invoice_template_id;
+        }
 
         // Set up the request arguments
         $args = [

@@ -4,6 +4,7 @@
 
 - make sure to bump versions on final commits in both the `readme.txt` file and `index.php` for the plugin
 - when releasing to the wordpress.org plugin repository, remove the `class-github-updates.php` file and the call to it in `index.php`, then run `npm run plugin-zip and submit those files.
+- it's good to update the Changelog section in the `readme.txt` file for each version release.
 
 ## Install
 
