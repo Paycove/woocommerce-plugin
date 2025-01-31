@@ -274,7 +274,7 @@ class WC_Paycove_Gateway extends WC_Payment_Gateway
         ];
 
         // Add the template ID if it is set.
-        if( '' !== $this->paycove_invoice_template_id ) {
+        if('' !== $this->paycove_invoice_template_id) {
             $data['template_id'] = $this->paycove_invoice_template_id;
         }
 

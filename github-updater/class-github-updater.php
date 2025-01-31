@@ -18,7 +18,8 @@ class Github_Updater
      * @param object|bool $transient
      * @return object
      */
-    public function check_github_plugin_update($transient) {
+    public function check_github_plugin_update($transient)
+    {
         // If the transient is not an object, return it as is.
         if (!is_object($transient)) {
             return $transient;

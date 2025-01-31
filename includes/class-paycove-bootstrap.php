@@ -1,6 +1,7 @@
 <?php
 
-class Paycove_Bootstrap {
+class Paycove_Bootstrap
+{
     public $plugin_url = 'https://paycove.io';
     public $plugin_slug = 'paycove';
 

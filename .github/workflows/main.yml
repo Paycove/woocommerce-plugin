@@ -1,51 +1,51 @@
 name: Build and Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version number'
-        required: true
+    workflow_dispatch:
+        inputs:
+            version:
+                description: 'Version number'
+                required: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '20'
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: '20'
 
-    - name: Install NPM dependencies
-      run: npm install
+            - name: Install NPM dependencies
+              run: npm install
 
-    - name: Build project
-      run: npm run build
+            - name: Build project
+              run: npm run build
 
-    - name: Zip plugin
-      run: npm run plugin-zip
+            - name: Zip plugin
+              run: npm run plugin-zip
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.event.inputs.version }}
-        release_name: ${{ github.event.inputs.version }} Release
-        draft: false
-        prerelease: false
+            - name: Create Release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ github.event.inputs.version }}
+                  release_name: ${{ github.event.inputs.version }} Release
+                  draft: false
+                  prerelease: false
 
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./paycove.zip
-        asset_name: paycove.zip
-        asset_content_type: application/zip
+            - name: Upload Release Asset
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./paycove.zip
+                  asset_name: paycove.zip
+                  asset_content_type: application/zip

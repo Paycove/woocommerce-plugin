@@ -6,6 +6,12 @@
 - when releasing to the wordpress.org plugin repository, remove the `class-github-updates.php` file and the call to it in `index.php`, then run `npm run plugin-zip and submit those files.
 - it's good to update the Changelog section in the `readme.txt` file for each version release.
 
+## WordPress.org plugin releases
+
+- Remove the line that requires the Github updater from the `index.php` file.
+- Run `npm run plugin-zip`, this will zip all the necessary files for WP.org.
+- Submit that zip to the repo.
+
 ## Install
 
 You know the drill:
