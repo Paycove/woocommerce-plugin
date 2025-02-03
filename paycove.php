@@ -4,7 +4,7 @@
  * Plugin URI: https://paycove.io
  * Description: Integrate your store with Paycove.
  * Author: Paycove
- * Version: 0.1.11
+ * Version: 0.1.12
  * License: MIT
  * Text Domain: paycove
  */
