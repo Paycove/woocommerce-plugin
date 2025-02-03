@@ -32,8 +32,8 @@ function paycove_check_plugin_dependency()
  */
 function paycove_admin_notice_missing_main_plugin()
 {
-  // Make sure that the "Plugin activated" notice is not displayed.
-    if ( isset( $_GET['activate'] ) ) {
+    // Make sure that the "Plugin activated" notice is not displayed.
+    if (isset($_GET['activate'])) {
         unset($_GET['activate']);
     }
 
