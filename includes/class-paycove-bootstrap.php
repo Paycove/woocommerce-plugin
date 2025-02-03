@@ -1,5 +1,8 @@
 <?php
 
+if (! defined('ABSPATH')) {
+    exit;
+} // Exit if accessed directly
 class Paycove_Bootstrap
 {
     public $plugin_url = 'https://paycove.io';

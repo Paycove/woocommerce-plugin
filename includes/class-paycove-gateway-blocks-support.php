@@ -1,12 +1,12 @@
 <?php
 
-use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
-
 if (! defined('ABSPATH')) {
     exit;
 }
 
-final class WC_Paycove_Gateway_Blocks_Support extends AbstractPaymentMethodType
+use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
+
+final class Paycove_Gateway_Blocks_Support extends AbstractPaymentMethodType
 {
     protected $name = 'paycove';
     protected $settings;

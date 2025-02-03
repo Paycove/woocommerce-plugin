@@ -4,7 +4,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-class WC_Paycove_Gateway extends WC_Payment_Gateway
+class Paycove_Gateway extends WC_Payment_Gateway
 {
     public $id;
     public $icon;

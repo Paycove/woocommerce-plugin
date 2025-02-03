@@ -1,5 +1,8 @@
 <?php
 
+if (! defined('ABSPATH')) {
+    exit;
+} // Exit if accessed directly
 class Github_Updater
 {
     public $plugin_url = 'https://paycove.io';
@@ -58,11 +61,11 @@ class Github_Updater
         $plugin_slug = 'paycove';
 
         // Get the current installed version
-        $installed_version = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin_slug . '/index.php')['Version'];
+        $installed_version = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin_slug . '/paycove.php')['Version'];
 
         // Compare versions and update if necessary
         if (version_compare($installed_version, $latest_version, '<')) {
-            $transient->response[$plugin_slug . '/index.php'] = (object) array(
+            $transient->response[$plugin_slug . '/paycove.php'] = (object) array(
               'url' => $data->html_url,
               'slug' => $plugin_slug,
               'new_version' => $latest_version,
@@ -93,7 +96,7 @@ class Github_Updater
 
         return sprintf(
             '%s?TB_iframe=true&width=600&height=550',
-            // @todo maybe change this to the changelog of the plugin?
+            // @todo eventually change this to the changelog of the plugin?
             $this->plugin_url
         );
     }
@@ -111,7 +114,7 @@ class Github_Updater
             // just update the version number
             if (isset($options['plugins']) && is_array($options['plugins'])) {
                 foreach ($options['plugins'] as $plugin) {
-                    if ($plugin == 'paycove/index.php') {
+                    if ($plugin == 'paycove/paycove.php') {
                         delete_transient('paycove_last_checked');
                         delete_transient('paycove_update_data');
                     }
