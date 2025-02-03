@@ -38,13 +38,13 @@ function paycove_admin_notice_missing_main_plugin()
     }
 
     $message = sprintf(
-        /* translators: 1: Plugin name 2: Elementor */
+        /* translators: 1: Plugin name (Paycove) 2: WooCommerce */
         esc_html__('"%1$s" requires "%2$s" to be installed and activated.', 'paycove'),
         '<strong>Paycove</strong>',
         '<strong>' . esc_html__('WooCommerce', 'paycove') . '</strong>'
     );
 
-    printf('<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message);
+    printf('<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', wp_kses_post($message));
 }
 
 /**

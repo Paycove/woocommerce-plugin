@@ -55,6 +55,9 @@ For any issues or questions, visit [https://paycove.io](https://paycove.io) and 
 
 == Changelog ==
 
+= 0.1.12 =
+* Checks to make sure WooCommerce is active.
+
 = 0.1.9 =
 * Template ID is now optional.
 
