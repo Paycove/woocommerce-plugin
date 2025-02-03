@@ -17,7 +17,7 @@
     "assets",
     "build",
     "includes",
-    "index.php",
+    "paycove.php",
     "package.json",
     "package-lock.json",
     "readme.txt",
